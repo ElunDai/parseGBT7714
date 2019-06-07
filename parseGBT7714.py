@@ -3,8 +3,8 @@
 # -*- coding: utf-8 -*-
 #==============================
 #    Author: Elun Dai
-#    Last modified: 2019-06-07 15:24
-#    Filename: parse7714.py
+#    Last modified: 2019-06-07 15:44
+#    Filename: parseGBT7714.py
 #    Description:
 #    
 #=============================#
@@ -13,11 +13,10 @@ from collections import defaultdict
 
 useras = {
     'J' : ['author.title[usera].translator,year,volume(number):pages[urldate].url.doi',
-           'author.title[usera].translaotr,year,volume(number):pages.url',
-           'author.title[usera].title,year,volume(number):pages.url'],
+           'author.title[usera].translaotr,year,volume(number):pages.url'],
     "M" : ['author.tittle[usera].tittle[usera].location:publisher'],
     'R' : ['author.title[usera].location:publisher,date.',
-           'author.title:subtittle[usera].location:publisher,date.',],
+           'author.title:subtittle[usera].location:publisher,date.'],
 }
 
 entrytypes = {
