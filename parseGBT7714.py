@@ -3,7 +3,7 @@
 # -*- coding: utf-8 -*-
 #==============================
 #    Author: Elun Dai
-#    Last modified: 2019-06-07 16:44
+#    Last modified: 2019-06-25 21:21
 #    Filename: parseGBT7714.py
 #    Description:
 #=============================#
@@ -11,15 +11,18 @@ import re
 from collections import defaultdict
 
 useras = {
-    'J' : ['author.title[usera].translator,year,volume(number):pages[urldate].url.doi',
-           'author.title[usera].translaotr,year,volume(number):pages.url'],
-    'M' : ['author.tittle[usera].tittle[usera].location:publisher.'],
+    'J' : ['author.title[usera].translator,year,volume(number):pages[urldate].url.doi.',
+           'author.title[usera].translator,year,volume(number):pages.url.',
+           'author.title[usera].translator,year,volume(number):pages.'],
+    'M' : ['author.title[usera].location:publisher.',
+           'author.title[usera].location:publisher,year:pages,volume.'],
     'R' : ['author.title[usera].location:publisher,date.',
-           'author.title:subtittle[usera].location:publisher,date.'],
-    'EB/OL' : ['author.title[usera].address,date.',
-                'author.title[usera].address,date/urldate.',],
+           'author.title:subtitle[usera].location:publisher,date.'],
+    'EB' : ['author.title[usera].url,date.',
+                'author.title[usera].url,date/urldate.',],
     'N' : ['author.title[usera].journaltitle,date(number).',],
-    'D' : ['author.title[usera].address:publisher,year'],
+    'D' : ['author.title[usera].address:publisher,year.'],
+    'C' : ['author.title.edition[usera].location:publisher,year:pages.'],
 }
 
 entrytypes = {
@@ -30,7 +33,6 @@ entrytypes = {
     'N' : 'newspaper',
     'D' : 'mastersthesis',
     'R' : 'report',
-    'EB/OL' : 'online',
     'EB' : 'online',
     'S' : 'standard',
     'P' : 'patent',
@@ -62,11 +64,14 @@ def delspace(s):
     return s
 
 def getusera(s):
-    res = re.findall(r'\[(.*)\]', s)
+    s = re.sub(r'EB/OL', r'EB', s)
+    res = re.findall(r'\[(.*?)\]', s)
     if res is not None:
-        return res[0]
-    else:
-        return None
+        for usera in res:
+            if usera in useras.keys():
+                res = usera
+                return res
+    raise KeyError('Could not find pattern for usera ' + str(res) + ', plese add it manually to useras dictionary.')
 
 def parse(s):
     parsed_dict = defaultdict(str)
@@ -74,7 +79,6 @@ def parse(s):
     parsed_dict['source'] = s
     print("parsing", s)
     usera = getusera(s)
-    parsed_dict['usera'] = usera
     styles = useras.get(usera)
     if styles is None:
         raise IndexError("Couldn't find pattern of entry file " + usera)
@@ -85,6 +89,8 @@ def parse(s):
             res = res.groups()
             assert len(files) == len(res)
             parsed_dict.update(dict(zip(files, res)))
+            parsed_dict['author'] = re.sub(r',', r' and ', parsed_dict['author']) # use 'and' to seperate authors
+            parsed_dict['usera'] = usera
             print("matched!", style)
             print(len(parsed_dict)-1, "entry files has found!")
             return parsed_dict
