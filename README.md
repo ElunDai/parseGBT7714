@@ -52,7 +52,7 @@ author = {毛峡,丁玉宽}
 useras = {
     'J' : ['author.title[usera].translator,year,volume(number):pages[urldate].url.doi',
            'author.title[usera].translaotr,year,volume(number):pages.url'],
-    "M" : ['author.tittle[usera].tittle[usera].location:publisher'],
+    "M" : ['author.title[usera].tittle[usera].location:publisher'],
     'R' : ['author.title[usera].location:publisher,date.',
            'author.title:subtittle[usera].location:publisher,date.'],
 }
